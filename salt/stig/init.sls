@@ -51,14 +51,18 @@ update_remediation_script:
 
 run_remediation_script:
   cmd.run:
-    - name: /usr/sbin/so-stig
+    - name: /usr/sbin/so-stig 2>&1 > /opt/so/log/stig/stig-$(date +%Y%m%d-%H%M%S).log
+
+remove_old_stig_logs:
+  cmd.run:
+    - name: find /opt/so/log/stig -type f -mtime +2 -exec rm -f {} \;
 
 stig_remediate_schedule:
   schedule.present:
     - function: state.apply
     - job_args:
       - stig
-    - minutes: 30
+    - hours: 12
     - maxrunning: 1
     - enabled: true
 
